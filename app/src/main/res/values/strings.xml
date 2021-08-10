@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Oh My Chat</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="chat_app">Chat App</string>
+    <string name="reliable_and_fast">Reliable and Fast</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="welcome">Welcome</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="to_my_chat_app">to my Chat App</string>
+    <string name="reset_text">By clicking RESET, you will receive an email to reset your password.</string>
+    <string name="reset">Reset</string>
+    <string name="lock_image">Lock Image</string>
+    <string name="todo">TODO</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="take_photo">Take photo</string>
+    <string name="choose_from_gallery">Choose from gallery</string>
+    <string name="name">Name</string>
+    <string name="chats">Chats</string>
+    <string name="search">Search</string>
+    <string name="groups">Groups</string>
+    <string name="profile">Profile</string>
+    <string name="log_out">Log Out</string>
+    <string name="bio">Bio</string>
+    <string name="hey_there">Hey there!</string>
+</resources>

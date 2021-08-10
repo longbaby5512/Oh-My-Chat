@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/background_bio.xml" value="0.26296296296296295" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/camera_icon_background.xml" value="0.22796052631578947" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_back.xml" value="0.13026315789473683" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_camera.xml" value="0.13026315789473683" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_chat.xml" value="0.13026315789473683" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_edit.xml" value="0.3609375" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_email.xml" value="0.13026315789473683" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_exit.xml" value="0.3609375" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_person.xml" value="0.3609375" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_profile.xml" value="0.3609375" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/ic_search.xml" value="0.3609375" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/round_corner.xml" value="0.22796052631578947" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/drawable/shape_search.xml" value="0.13026315789473683" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/activity_account.xml" value="0.18854166666666666" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/activity_splash.xml" value="0.25" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_chats.xml" value="0.1" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_groups.xml" value="0.12006578947368421" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_login.xml" value="0.18" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_photo_view.xml" value="0.18" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_profile.xml" value="0.22" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_register.xml" value="0.33" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_reset_password.xml" value="0.2" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_search.xml" value="0.25" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_view_paper.xml" value="0.12072368421052632" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/menu/bottom_nav_menu.xml" value="0.12006578947368421" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/menu/logout.xml" value="0.19010416666666666" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/menu/photo_menu.xml" value="0.21776315789473685" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/xml/file_paths.xml" value="0.12006578947368421" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

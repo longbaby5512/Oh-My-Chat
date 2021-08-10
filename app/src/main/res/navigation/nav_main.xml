@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/viewPaperFragment">
+
+    <fragment
+        android:id="@+id/chatsFragment"
+        android:name="com.karry.ohmychat.ui.fragments.ChatsFragment"
+        android:label="Chats"
+        tools:layout="@layout/fragment_chats" />
+    <fragment
+        android:id="@+id/groupsFragment"
+        android:name="com.karry.ohmychat.ui.fragments.GroupsFragment"
+        android:label="Groups"
+        tools:layout="@layout/fragment_groups" />
+    <fragment
+        android:id="@+id/photoViewFragment"
+        android:name="com.karry.ohmychat.ui.fragments.PhotoViewFragment"
+        android:label="Photo View"
+        tools:layout="@layout/fragment_photo_view" >
+        <argument
+            android:name="bitmap"
+            app:argType="android.graphics.Bitmap"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.karry.ohmychat.ui.fragments.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.karry.ohmychat.ui.fragments.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/viewPaperFragment"
+        android:name="com.karry.ohmychat.ui.fragments.ViewPaperFragment"
+        android:label="fragment_view_paper"
+        tools:layout="@layout/fragment_view_paper" >
+        <action
+            android:id="@+id/action_viewPaperFragment_to_photoViewFragment"
+            app:destination="@id/photoViewFragment" />
+    </fragment>
+</navigation>
