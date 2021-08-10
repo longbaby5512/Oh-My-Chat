@@ -4,6 +4,7 @@
     package="com.karry.ohmychat">
 
     <uses-feature android:name="android.hardware.camera" android:required="true"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission
@@ -24,11 +25,14 @@
             android:name=".ui.activities.AccountActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"/>
         <activity
             android:name=".ui.activities.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.OhMyChat.NoActionBar"
+            android:screenOrientation="fullSensor"
+            android:launchMode="singleTop"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,6 +44,8 @@
             android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.OhMyChat"
+            android:screenOrientation="fullSensor"
+            android:launchMode="singleTop"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"/>
 
         <provider

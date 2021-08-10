@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "174591685416",
+    "project_id": "oh-my-chat-8ba18",
+    "storage_bucket": "oh-my-chat-8ba18.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174591685416:android:e7d10d7f951fb453b8561d",
+        "android_client_info": {
+          "package_name": "com.karry.ohmychat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "174591685416-g03cfb5hppmvgolk46f3r0aet8ceb656.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.karry.ohmychat",
+            "certificate_hash": "44838de0ac88cdd6151dd9a9d2b7e29b2d7c3402"
+          }
+        },
+        {
+          "client_id": "174591685416-ad2v0ra8ue2dul6jqbp2j0q7f01ai1h1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkuuTtV56cJuAbWNjhKYi8v-NcE974zQU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "174591685416-ad2v0ra8ue2dul6jqbp2j0q7f01ai1h1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -24,13 +25,19 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.util.PatternsCompat.EMAIL_ADDRESS
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.auth.FirebaseUser
 import com.karry.ohmychat.R
 import com.karry.ohmychat.databinding.FragmentRegisterBinding
-import com.karry.ohmychat.model.User
 import com.karry.ohmychat.ui.activities.MainActivity
 import com.karry.ohmychat.utils.*
+import com.karry.ohmychat.viewmodel.RegisterViewModel
 import java.io.FileNotFoundException
+import java.util.*
 
 
 class RegisterFragment : Fragment() {
@@ -38,6 +45,8 @@ class RegisterFragment : Fragment() {
     private val binding get() = _binding!!
     private var bitmap: Bitmap? = null
     private var uri: Uri? = null
+    private lateinit var registerViewModel: RegisterViewModel
+    private lateinit var currentUser: FirebaseUser
 
     override fun onResume() {
         super.onResume()
@@ -62,6 +71,11 @@ class RegisterFragment : Fragment() {
     ): View {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
+        registerViewModel = ViewModelProvider(
+            requireActivity(), ViewModelProvider
+                .AndroidViewModelFactory.getInstance(requireActivity().application)
+        ).get(RegisterViewModel::class.java)
+
         if (bitmap != null) {
             binding.profileImageRegister.setImageBitmap(bitmap)
         }
@@ -83,64 +97,60 @@ class RegisterFragment : Fragment() {
             }
 
             buttonRegister.setOnClickListener {
-                usernameSignupInputLayout.clearFocus()
-                emailSignupInputLayout.clearFocus()
-                passwordSignupInputLayout.clearFocus()
+                usernameRegisterInputLayout.clearFocus()
+                emailRegisterInputLayout.clearFocus()
+                passwordRegisterInputLayout.clearFocus()
                 it.startAnimation(buttonClick)
 
-                val email = emailSignupEditText.text.toString()
-                val name = usernameSignupEditText.text.toString()
-                val password = passwordSignupEditText.text.toString()
-                val passwordConfirm = confirmSignupEditText.text.toString()
-
-                usernameSignupInputLayout.error = ""
-                emailSignupInputLayout.error = ""
-                passwordSignupInputLayout.error = ""
-                confirmSignupInputLayout.error = ""
+                val email = emailRegisterEditText.text.toString()
+                val name = usernameRegisterEditText.text.toString()
+                val password = passwordRegisterEditText.text.toString()
+                val passwordConfirm = confirmRegisterEditText.text.toString()
 
                 if (email.isEmpty() && name.isEmpty() && password.isEmpty() && passwordConfirm.isEmpty()) {
                     showToast(requireContext(), "Fields are empty!")
-                    usernameSignupInputLayout.requestFocus()
+                    usernameRegisterInputLayout.requestFocus()
                 } else if (name.isEmpty()) {
-                    usernameSignupInputLayout.error = "Please enter a username."
-                    usernameSignupInputLayout.requestFocus()
+                    usernameRegisterInputLayout.error = "Please enter a username."
+                    usernameRegisterInputLayout.requestFocus()
                 } else if (email.isEmpty()) {
-                    emailSignupInputLayout.error = "Please enter your email."
-                    emailSignupInputLayout.requestFocus()
+                    emailRegisterInputLayout.error = "Please enter your email."
+                    emailRegisterInputLayout.requestFocus()
                 } else if(!EMAIL_ADDRESS.matcher(email).matches()) {
-                    emailSignupInputLayout.error = "Your text is not email."
-                    emailSignupInputLayout.requestFocus()
-                }else if (password.isEmpty()) {
-                    passwordSignupInputLayout.error = "Please enter your password"
-                    passwordSignupInputLayout.requestFocus()
+                    emailRegisterInputLayout.error = "Your text is not email."
+                    emailRegisterInputLayout.requestFocus()
+                } else if (password.isEmpty()) {
+                    passwordRegisterInputLayout.error = "Please enter your password"
+                    passwordRegisterInputLayout.requestFocus()
                 } else if (passwordConfirm.isEmpty()) {
-                    confirmSignupInputLayout.error = "Please enter your password"
-                    confirmSignupInputLayout.requestFocus()
+                    confirmRegisterInputLayout.error = "Please enter your password"
+                    confirmRegisterInputLayout.requestFocus()
                 } else if(password != passwordConfirm) {
-                    confirmSignupInputLayout.error = "Password confirm and password are not similar"
-                    confirmSignupInputLayout.requestFocus()
+                    confirmRegisterInputLayout.error = "Password confirm and password are not " +
+                            "similar"
+                    confirmRegisterInputLayout.requestFocus()
                 } else {
-                    progressBarSignup.visibility = View.VISIBLE
-                    usernameSignupInputLayout.isClickable = false
-                    emailSignupInputLayout.isClickable = false
-                    passwordSignupInputLayout.isClickable = false
+                    progressBarRegister.visibility = View.VISIBLE
+                    usernameRegisterInputLayout.isClickable = false
+                    emailRegisterInputLayout.isClickable = false
+                    passwordRegisterInputLayout.isClickable = false
                     buttonRegister.isClickable = false
-                    dismissKeyboard(requireActivity())
-                    val imageBitmap = (profileImageRegister.drawable as BitmapDrawable).bitmap
-                    val imageBase64 = ImageProcessing.convert(imageBitmap)
+                    buttonToLogin.isClickable = false
+                    profileImageRegister.isClickable = false
+                    buttonUpImage.isClickable = false
+                    buttonRegister.animate().alpha(0.5F).duration = 500L
 
-                    val user = User(0.toString(), name, email, password, imageBase64)
-                    register(user)
+                    usernameRegisterEditText.setText("")
+                    emailRegisterEditText.setText("")
+                    passwordRegisterEditText.setText("")
+                    confirmRegisterEditText.setText("")
+
+                    dismissKeyboard(requireActivity())
+                    register(email, password)
                 }
             }
 
 
-
-            buttonRegister.setOnClickListener {
-                val intent = Intent(requireActivity(), MainActivity::class.java)
-                startActivity(intent)
-                requireActivity().finish()
-            }
 
             buttonUpImage.setOnClickListener {
                 it.startAnimation(buttonClick)
@@ -152,8 +162,59 @@ class RegisterFragment : Fragment() {
     }
 
 
-    private fun register(user: User) {
-        showToast(requireContext(), "Register")
+    private fun register(email: String, password: String) {
+        registerViewModel.registerUser(email, password)
+        registerViewModel.registerUser.observe(viewLifecycleOwner) {
+            if(!it.isSuccessful) {
+                with(binding) {
+                    progressBarRegister.visibility = View.GONE
+                    usernameRegisterInputLayout.isClickable = true
+                    emailRegisterInputLayout.isClickable = true
+                    passwordRegisterInputLayout.isClickable = true
+                    buttonRegister.isClickable = true
+                    buttonToLogin.isClickable = true
+                    buttonRegister.animate().alpha(1F).duration = 500L
+                    profileImageRegister.isClickable = true
+                    buttonUpImage.isClickable = true
+
+                    usernameRegisterInputLayout.requestFocus()
+
+                }
+                try {
+                    throw it.exception!!
+                } catch (existEmail: FirebaseAuthUserCollisionException) {
+                    Toast.makeText(context, "Email Id already exists.", Toast.LENGTH_SHORT).show()
+                } catch (weakPassword: FirebaseAuthWeakPasswordException) {
+                    Toast.makeText(
+                        context,
+                        "Password length should be more then six characters.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (malformedEmail: FirebaseAuthInvalidCredentialsException) {
+                    Toast.makeText(
+                        context,
+                        "Invalid credentials, please try again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (e: java.lang.Exception) {
+                    Toast.makeText(context, "SignUp unsuccessful. Try again.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            } else {
+                getUserSession()
+                val intent = Intent(requireActivity(), MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+
+
+            }
+        }
+    }
+
+    private fun getUserSession() {
+        registerViewModel.userFirebaseSession.observe(viewLifecycleOwner) {
+            currentUser = it
+        }
     }
 
     private val pickImage = registerForActivityResult(

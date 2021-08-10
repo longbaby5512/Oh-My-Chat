@@ -50,6 +50,7 @@ class ProfileFragment : Fragment() {
 
         if (bitmap != null) {
             binding.myProfileImage.setImageBitmap(bitmap)
+            profileImageToolbar.setImageBitmap(bitmap)
         }
 
         init()

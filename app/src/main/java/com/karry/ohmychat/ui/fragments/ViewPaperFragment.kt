@@ -16,16 +16,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.karry.ohmychat.R
 import com.karry.ohmychat.adapter.ViewPager2Adapter
 import com.karry.ohmychat.databinding.FragmentViewPaperBinding
 import com.karry.ohmychat.ui.activities.AccountActivity
+import com.karry.ohmychat.viewmodel.LoginViewModel
 
 class ViewPaperFragment : Fragment() {
     private var _binding: FragmentViewPaperBinding? = null
     private val binding get() = _binding!!
     private lateinit var rootView: View
+    private lateinit var loginViewModel: LoginViewModel
 
     override fun onResume() {
         super.onResume()
@@ -56,6 +60,11 @@ class ViewPaperFragment : Fragment() {
             GroupsFragment(),
             ProfileFragment()
         )
+        loginViewModel = ViewModelProvider(
+            requireActivity(), ViewModelProvider
+                .AndroidViewModelFactory.getInstance(requireActivity().application)
+        ).get(LoginViewModel::class.java)
+
         val adapter = ViewPager2Adapter(listFragment, childFragmentManager,
             lifecycle)
         with(binding){
@@ -69,11 +78,18 @@ class ViewPaperFragment : Fragment() {
         }
     }
 
+
     private fun listener() {
         with(binding) {
             buttonLogout.setOnClickListener {
-                getUserAuthToSignOut()
-               Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Logout")
+                    .setMessage("Do you want logout?")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Accept") { _, _ -> getUserAuthToSignOut() }
+                    .setCancelable(false)
+                    .show()
+
             }
 
             bottomNavigation.setOnItemSelectedListener {
@@ -203,9 +219,14 @@ class ViewPaperFragment : Fragment() {
         ContextCompat.getColor(requireActivity().applicationContext, colorRes)
 
     private fun getUserAuthToSignOut() {
-        val intent = Intent(requireActivity(), AccountActivity::class.java)
-        startActivity(intent)
-        requireActivity().finish()
+        loginViewModel.firebaseAuth.observe(viewLifecycleOwner) {
+            it.signOut()
+            Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireActivity(), AccountActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
+
     }
 
 }
