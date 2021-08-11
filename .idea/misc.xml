@@ -21,15 +21,16 @@
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/activity_account.xml" value="0.18854166666666666" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/activity_splash.xml" value="0.25" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/dialog_logout.xml" value="0.21776315789473685" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_chats.xml" value="0.1" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_groups.xml" value="0.12006578947368421" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_login.xml" value="0.75" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_photo_view.xml" value="0.18" />
-        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_profile.xml" value="0.22" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_profile.xml" value="0.25" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_register.xml" value="0.2" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_reset_password.xml" value="0.2" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_search.xml" value="0.25" />
-        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_view_paper.xml" value="0.12072368421052632" />
+        <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/layout/fragment_view_paper.xml" value="0.18" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/menu/bottom_nav_menu.xml" value="0.12006578947368421" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/menu/logout.xml" value="0.19010416666666666" />
         <entry key="..\:/Jetbrain/AndroidStudioProjects/OhMyChat/app/src/main/res/menu/photo_menu.xml" value="0.21776315789473685" />

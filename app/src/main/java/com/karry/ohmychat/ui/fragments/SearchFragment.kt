@@ -7,12 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.karry.ohmychat.R
 import com.karry.ohmychat.databinding.FragmentSearchBinding
+import com.karry.ohmychat.utils.getColorResource
 
 
 class SearchFragment : Fragment() {
@@ -48,18 +48,18 @@ class SearchFragment : Fragment() {
         var drawable =
             ContextCompat.getDrawable(requireActivity().applicationContext, R.drawable.ic_exit)
         drawable = DrawableCompat.wrap(drawable!!)
-        DrawableCompat.setTint(drawable, getColorResource(R.color.search_900))
+        DrawableCompat.setTint(drawable, getColorResource(requireActivity(), R.color.search_900))
         exitIcon.setImageDrawable(drawable)
 
         val searchEditText: EditText =
             binding.searchUser.findViewById(androidx.appcompat.R.id.search_src_text)
-        searchEditText.setTextColor(getColorResource(R.color.search_900))
-        searchEditText.setHintTextColor(getColorResource(R.color.search_500))
-        searchEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen.query_seach))
+        searchEditText.setTextColor(getColorResource(requireActivity(), R.color.search_900))
+        searchEditText.setHintTextColor(getColorResource(requireActivity(), R.color.search_500))
+        searchEditText.setTextSize(
+            TypedValue.COMPLEX_UNIT_PX,
+            resources.getDimension(R.dimen.query_seach)
+        )
     }
-
-    private fun getColorResource(@ColorRes color: Int) =
-        ContextCompat.getColor(requireActivity().applicationContext, color)
 
     companion object {
         private const val TAG = "SearchFragment"

@@ -10,51 +10,54 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:orientation="vertical"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
 
-            <FrameLayout
-                android:id="@+id/toolbar_home"
-                android:layout_width="match_parent"
+        <FrameLayout
+            android:id="@+id/toolbar_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/purple_500">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image_home"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginVertical="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="7dp"
+                android:src="@drawable/profile"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+            <TextView
+                android:id="@+id/username_home"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/purple_500">
+                android:layout_gravity="center"
+                android:text="@string/name"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profile_image_home"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginVertical="5dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="7dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/profile"
-                    tools:ignore="SpeakableTextPresentCheck" />
+            <ImageView
+                android:id="@+id/button_logout"
 
-                <TextView
-                    android:id="@+id/username_home"
-                    android:layout_width="wrap_content"
-                    android:text="@string/name"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-                <ImageView
-                    android:id="@+id/button_logout"
-
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_marginEnd="5dp"
-                    android:src="@drawable/ic_logout"
-                    android:contentDescription="@string/todo" />
-            </FrameLayout>
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@string/todo"
+                android:src="@drawable/ic_logout" />
+        </FrameLayout>
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager"
@@ -69,8 +72,8 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_gravity="bottom"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/round_corner"
         app:cnb_menuResource="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"

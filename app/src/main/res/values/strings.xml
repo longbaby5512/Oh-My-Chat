@@ -29,4 +29,6 @@
     <string name="log_out">Log Out</string>
     <string name="bio">Bio</string>
     <string name="hey_there">Hey there!</string>
+    <string name="example_email">example@example.com</string>
+    <string name="change_password">Change password</string>
 </resources>

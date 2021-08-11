@@ -1,3 +1,10 @@
 <resources>
 
+    <style name="Widget.App.ButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="materialThemeOverlay">@style/ButtonThemeOverlay</item>
+    </style>
+
+    <style name="ButtonThemeOverlay">
+        <item name="colorPrimary">@color/profiles_700</item>
+    </style>
 </resources>

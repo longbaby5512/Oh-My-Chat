@@ -4,10 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.ShapeDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,18 +13,16 @@ import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.karry.ohmychat.R
 import com.karry.ohmychat.databinding.FragmentProfileBinding
 import com.karry.ohmychat.utils.checkAndRequestPermissions
+import com.karry.ohmychat.utils.getColorResource
+import com.karry.ohmychat.utils.setBackgroundColor
+import com.karry.ohmychat.utils.setIconColor
 import java.io.FileNotFoundException
 
 class ProfileFragment : Fragment() {
@@ -61,12 +55,34 @@ class ProfileFragment : Fragment() {
         profileImageToolbar = requireActivity().findViewById(R.id.profile_image_home)
         with(binding) {
 
-            setIconColor(R.drawable.ic_camera, myButtonCamera, R.color.profiles_900)
-            setIconColor(R.drawable.ic_edit, buttonEdit, R.color.profiles_900)
-            setBackgroundColor(myBioProfile.background!!, getColorResource(R.color.profiles_200_tran_BA))
-            setBackgroundColor(myButtonCamera.background!!, getColorResource(R.color.profiles_200_tran_5A))
+            setIconColor(
+                requireActivity(),
+                R.drawable.ic_camera,
+                myButtonCamera,
+                R.color.profiles_900
+            )
+            setIconColor(requireActivity(), R.drawable.ic_edit, buttonEdit, R.color.profiles_900)
+            setIconColor(
+                requireActivity(),
+                R.drawable.ic_setting,
+                buttonSettingProfile,
+                R.color.profiles_900
+            )
+            setBackgroundColor(
+                myBioProfile.background!!,
+                getColorResource(requireActivity(), R.color.profiles_200_tran_BA)
+            )
+            setBackgroundColor(
+                myButtonCamera.background!!,
+                getColorResource(requireActivity(), R.color.profiles_200_tran_5A)
+            )
+            setBackgroundColor(
+                myEmailProfile.background!!,
+                getColorResource(requireActivity(), R.color.profiles_200_tran_BA)
+            )
             myProfileImage.setOnClickListener {
-                val action = ViewPaperFragmentDirections.actionViewPaperFragmentToPhotoViewFragment(bitmap)
+                val action =
+                    ViewPaperFragmentDirections.actionViewPaperFragmentToPhotoViewFragment(bitmap)
                 findNavController().navigate(action)
             }
             myButtonCamera.setOnClickListener {
@@ -75,26 +91,6 @@ class ProfileFragment : Fragment() {
                 showPopupMenu(it, R.menu.photo_menu)
             }
 
-        }
-    }
-
-    private fun getColorResource(@ColorRes color: Int) =
-        ContextCompat.getColor(requireActivity().applicationContext, color)
-
-    private fun setIconColor(@DrawableRes iconRes: Int, button: ImageView, @ColorRes colorRes: Int) {
-        var drawable = ContextCompat.getDrawable(requireActivity().applicationContext, iconRes)
-        drawable = DrawableCompat.wrap(drawable!!)
-        DrawableCompat.setTint(drawable, getColorResource(colorRes))
-        button.setImageDrawable(drawable)
-    }
-
-    private fun setBackgroundColor(background: Drawable, @ColorInt color: Int) {
-        if (background is ShapeDrawable) {
-            background.paint.color = color
-        } else if (background is GradientDrawable) {
-            background.setColor(color)
-        } else if (background is ColorDrawable) {
-            background.color = color
         }
     }
 

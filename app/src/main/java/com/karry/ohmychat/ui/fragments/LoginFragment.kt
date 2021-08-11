@@ -12,13 +12,22 @@ import androidx.core.util.PatternsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.karry.ohmychat.R
 import com.karry.ohmychat.databinding.FragmentLoginBinding
+import com.karry.ohmychat.model.User
 import com.karry.ohmychat.ui.activities.MainActivity
+import com.karry.ohmychat.utils.Constants.KEY_BIO
+import com.karry.ohmychat.utils.Constants.KEY_IMAGE
+import com.karry.ohmychat.utils.Constants.KEY_NAME
+import com.karry.ohmychat.utils.Constants.KEY_STATUS
+import com.karry.ohmychat.utils.Constants.KEY_TIMESTAMP
+import com.karry.ohmychat.utils.PreferenceManager
 import com.karry.ohmychat.utils.dismissKeyboard
+import com.karry.ohmychat.viewmodel.DatabaseViewModel
 import com.karry.ohmychat.viewmodel.LoginViewModel
 
 
@@ -27,6 +36,8 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var currentUser: FirebaseUser
+    private lateinit var preferenceManager: PreferenceManager
+    private lateinit var databaseViewModel: DatabaseViewModel
 
 
     override fun onResume() {
@@ -50,6 +61,13 @@ class LoginFragment : Fragment() {
                 .AndroidViewModelFactory.getInstance(requireActivity().application)
         ).get(LoginViewModel::class.java)
 
+        databaseViewModel = ViewModelProvider(
+            requireActivity(), ViewModelProvider
+                .AndroidViewModelFactory.getInstance(requireActivity().application)
+        ).get(DatabaseViewModel::class.java)
+
+        preferenceManager = PreferenceManager(requireContext())
+
         getUserSession()
 
         with(binding) {
@@ -70,9 +88,6 @@ class LoginFragment : Fragment() {
                 it.startAnimation(buttonClick)
                 dismissKeyboard(requireActivity())
 
-                emailLoginInputLayout.error = ""
-                passwordLoginInputLayout.error = ""
-
                 val email = emailLoginEditText.text.toString()
                 val password = passwordLoginEditText.text.toString()
 
@@ -89,17 +104,7 @@ class LoginFragment : Fragment() {
                     passwordLoginEditText.error = "Please enter your password."
                     passwordLoginEditText.requestFocus()
                 } else {
-                    emailLoginInputLayout.isClickable = false
-                    passwordLoginInputLayout.isClickable = false
-                    buttonToRegister.isClickable = false
-                    buttonToForgetPassword.isClickable = false
-                    progressBarLogin.visibility = View.VISIBLE
-                    buttonLogin.animate().alpha(0.5F).duration = 500L
-                    buttonLogin.isCheckable = false
-
-                    emailLoginInputLayout.error = ""
-                    passwordLoginInputLayout.error = ""
-
+                    loading(true)
                     loginUser(email, password)
                 }
             }
@@ -112,49 +117,56 @@ class LoginFragment : Fragment() {
 
     private fun loginUser(email: String, password: String) {
         loginViewModel.loginUser(email, password)
-        loginViewModel.loginUser.observe(viewLifecycleOwner) {
-            if (!it.isSuccessful) {
-                with(binding) {
-                    emailLoginInputLayout.isClickable = true
-                    passwordLoginInputLayout.isClickable = true
-                    buttonToRegister.isClickable = true
-                    buttonToForgetPassword.isClickable = true
-                    progressBarLogin.visibility = View.GONE
-                    buttonLogin.animate().alpha(1F).duration = 500L
-                    buttonLogin.isCheckable = true
-
-                    emailLoginEditText.setText("")
-                    passwordLoginEditText.setText("")
-
-                    emailLoginInputLayout.requestFocus()
-
-
-                    try {
-                        throw it.exception!!
-                    } catch (invalidEmail: FirebaseAuthInvalidUserException) {
-                        Toast.makeText(
-                            context,
-                            "Invalid credentials, please try again.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } catch (wrongPassword: FirebaseAuthInvalidCredentialsException) {
-                        Toast.makeText(
-                            context,
-                            "Wrong password or username , please try again.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } catch (e: Exception) {
-                        Toast.makeText(
-                            context,
-                            "Check Internet Connection.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+        loginViewModel.loginUser.observe(viewLifecycleOwner) { task ->
+            if (!task.isSuccessful) {
+                loading(false)
+                binding.emailLoginInputLayout.requestFocus()
+                try {
+                    throw task.exception!!
+                } catch (invalidEmail: FirebaseAuthInvalidUserException) {
+                    Toast.makeText(
+                        context,
+                        "Invalid credentials, please try again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (wrongPassword: FirebaseAuthInvalidCredentialsException) {
+                    Toast.makeText(
+                        context,
+                        "Wrong password or username , please try again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        context,
+                        "Check Internet Connection.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
-                val intent = Intent(requireActivity(), MainActivity::class.java)
-                startActivity(intent)
-                requireActivity().finish()
+                val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+                databaseViewModel.checkLogin(userId)
+                databaseViewModel.userSnapshot.observe(viewLifecycleOwner) { documentSnapshot ->
+                    if (documentSnapshot != null) {
+
+                        val name = documentSnapshot.getString(KEY_NAME)!!
+                        val timestamp = documentSnapshot.getLong(KEY_TIMESTAMP)!!
+                        val imageUrl = documentSnapshot.getString(KEY_IMAGE)!!
+                        val bio = documentSnapshot.getString(KEY_BIO)!!
+                        val status = documentSnapshot.getBoolean(KEY_STATUS)!!
+
+                        val user = User(userId, name, email, timestamp, imageUrl, bio, status)
+                        preferenceManager.putUser(user)
+
+                        val intent = Intent(requireActivity(), MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        }
+                        startActivity(intent)
+                        requireActivity().finish()
+                    }
+                }
+
             }
         }
     }
@@ -163,9 +175,40 @@ class LoginFragment : Fragment() {
         loginViewModel.firebaseUserLoginStatus.observe(viewLifecycleOwner) {
             if(it != null) {
                 currentUser = it
-                val intent = Intent(requireActivity(), MainActivity::class.java)
+                val intent = Intent(requireActivity(), MainActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
                 startActivity(intent)
                 requireActivity().finish()
+            }
+        }
+    }
+
+    private fun loading(isLoading: Boolean) {
+        with(binding) {
+            if (isLoading) {
+                emailLoginInputLayout.isClickable = false
+                passwordLoginInputLayout.isClickable = false
+                buttonToRegister.isClickable = false
+                buttonToForgetPassword.isClickable = false
+                progressBarLogin.visibility = View.VISIBLE
+                buttonLogin.animate().alpha(0.5F).duration = 500L
+                buttonLogin.isCheckable = false
+
+                emailLoginInputLayout.error = ""
+                passwordLoginInputLayout.error = ""
+            } else {
+                emailLoginInputLayout.isClickable = true
+                passwordLoginInputLayout.isClickable = true
+                buttonToRegister.isClickable = true
+                buttonToForgetPassword.isClickable = true
+                progressBarLogin.visibility = View.GONE
+                buttonLogin.animate().alpha(1F).duration = 500L
+                buttonLogin.isCheckable = true
+
+                emailLoginEditText.setText("")
+                passwordLoginEditText.setText("")
             }
         }
     }

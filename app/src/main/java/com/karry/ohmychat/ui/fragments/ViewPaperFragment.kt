@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -23,6 +22,8 @@ import com.karry.ohmychat.R
 import com.karry.ohmychat.adapter.ViewPager2Adapter
 import com.karry.ohmychat.databinding.FragmentViewPaperBinding
 import com.karry.ohmychat.ui.activities.AccountActivity
+import com.karry.ohmychat.utils.getColorResource
+import com.karry.ohmychat.utils.setStatusBarColor
 import com.karry.ohmychat.viewmodel.LoginViewModel
 
 class ViewPaperFragment : Fragment() {
@@ -148,44 +149,81 @@ class ViewPaperFragment : Fragment() {
     private fun onTabChats() {
         with(binding) {
             setLogoutIconColor(R.color.chats_100)
-            usernameHome.setTextColor(getColorResource(R.color.chats_100))
-            rootView.setBackgroundColor(getColorResource(R.color.chats_100))
-            setStatusBarColor(getColorResource(R.color.chats_500))
-            toolbarHome.setBackgroundColor(getColorResource(R.color.chats_500))
-            setBottomNavigationBackgroundColor(getColorResource(R.color.chats_200))
+            usernameHome.setTextColor(getColorResource(requireActivity(), R.color.chats_100))
+            rootView.setBackgroundColor(getColorResource(requireActivity(), R.color.chats_100))
+            setStatusBarColor(
+                requireActivity(),
+                getColorResource(requireActivity(), R.color.chats_500)
+            )
+            toolbarHome.setBackgroundColor(getColorResource(requireActivity(), R.color.chats_500))
+            setBottomNavigationBackgroundColor(
+                getColorResource(
+                    requireActivity(),
+                    R.color.chats_200
+                )
+            )
         }
     }
 
     private fun onTabSearch() {
         with(binding) {
             setLogoutIconColor(R.color.search_100)
-            usernameHome.setTextColor(getColorResource(R.color.search_100))
-            rootView.setBackgroundColor(getColorResource(R.color.search_100))
-            setStatusBarColor(getColorResource(R.color.search_500))
-            toolbarHome.setBackgroundColor(getColorResource(R.color.search_500))
-            setBottomNavigationBackgroundColor(getColorResource(R.color.search_200))
+            usernameHome.setTextColor(getColorResource(requireActivity(), R.color.search_100))
+            rootView.setBackgroundColor(getColorResource(requireActivity(), R.color.search_100))
+            setStatusBarColor(
+                requireActivity(),
+                getColorResource(requireActivity(), R.color.search_500)
+            )
+            toolbarHome.setBackgroundColor(getColorResource(requireActivity(), R.color.search_500))
+            setBottomNavigationBackgroundColor(
+                getColorResource(
+                    requireActivity(),
+                    R.color.search_200
+                )
+            )
         }
     }
 
     private fun onTabGroups() {
         with(binding) {
             setLogoutIconColor(R.color.groups_100)
-            usernameHome.setTextColor(getColorResource(R.color.groups_100))
-            rootView.setBackgroundColor(getColorResource(R.color.groups_100))
-            setStatusBarColor(getColorResource(R.color.groups_500))
-            toolbarHome.setBackgroundColor(getColorResource(R.color.groups_500))
-            setBottomNavigationBackgroundColor(getColorResource(R.color.groups_200))
+            usernameHome.setTextColor(getColorResource(requireActivity(), R.color.groups_100))
+            rootView.setBackgroundColor(getColorResource(requireActivity(), R.color.groups_100))
+            setStatusBarColor(
+                requireActivity(),
+                getColorResource(requireActivity(), R.color.groups_500)
+            )
+            toolbarHome.setBackgroundColor(getColorResource(requireActivity(), R.color.groups_500))
+            setBottomNavigationBackgroundColor(
+                getColorResource(
+                    requireActivity(),
+                    R.color.groups_200
+                )
+            )
         }
     }
 
     private fun onTabProfile() {
         with(binding) {
             setLogoutIconColor(R.color.profiles_100)
-            usernameHome.setTextColor(getColorResource(R.color.profiles_100))
-            rootView.setBackgroundColor(getColorResource(R.color.profiles_100))
-            setStatusBarColor(getColorResource(R.color.profiles_500))
-            toolbarHome.setBackgroundColor(getColorResource(R.color.profiles_500))
-            setBottomNavigationBackgroundColor(getColorResource(R.color.profiles_200))
+            usernameHome.setTextColor(getColorResource(requireActivity(), R.color.profiles_100))
+            rootView.setBackgroundColor(getColorResource(requireActivity(), R.color.profiles_100))
+            setStatusBarColor(
+                requireActivity(),
+                getColorResource(requireActivity(), R.color.profiles_500)
+            )
+            toolbarHome.setBackgroundColor(
+                getColorResource(
+                    requireActivity(),
+                    R.color.profiles_500
+                )
+            )
+            setBottomNavigationBackgroundColor(
+                getColorResource(
+                    requireActivity(),
+                    R.color.profiles_200
+                )
+            )
         }
     }
 
@@ -201,22 +239,14 @@ class ViewPaperFragment : Fragment() {
         }
     }
 
-    private fun setStatusBarColor(@ColorInt color: Int) {
-        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        requireActivity().window.statusBarColor = color
-    }
-
     private fun setLogoutIconColor(@ColorRes colorRes: Int) {
         var drawable = ContextCompat.getDrawable(requireActivity().applicationContext, R.drawable
             .ic_logout)
         drawable = DrawableCompat.wrap(drawable!!)
-        DrawableCompat.setTint(drawable, getColorResource(colorRes))
+        DrawableCompat.setTint(drawable, getColorResource(requireActivity(), colorRes))
         binding.buttonLogout.setImageDrawable(drawable)
     }
 
-    private fun getColorResource(@ColorRes colorRes: Int) =
-        ContextCompat.getColor(requireActivity().applicationContext, colorRes)
 
     private fun getUserAuthToSignOut() {
         loginViewModel.firebaseAuth.observe(viewLifecycleOwner) {

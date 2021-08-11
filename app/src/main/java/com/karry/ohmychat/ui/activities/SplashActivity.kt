@@ -22,12 +22,12 @@ class SplashActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.statusBarColor = Color.parseColor("#425C59")
-        binding.appName.animate().alpha(1f).duration = 2500L
+        binding.appName.animate().alpha(1f).duration = 3000L
 
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, AccountActivity::class.java)
             startActivity(intent)
             finish()
-        }, 3500)
+        }, 4000)
     }
 }
