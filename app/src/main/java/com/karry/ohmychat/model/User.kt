@@ -1,7 +1,10 @@
 package com.karry.ohmychat.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
+@Parcelize
 data class User(
     var id: String,
     var name: String,
@@ -11,4 +14,4 @@ data class User(
     var bio: String,
     var status: Boolean,
     var search: String = name.lowercase(Locale.getDefault())
-)
+) : Parcelable

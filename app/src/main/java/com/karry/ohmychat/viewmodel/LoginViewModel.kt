@@ -25,8 +25,4 @@ class LoginViewModel: ViewModel() {
     fun successPasswordReset(email: String) {
         successPasswordReset = loginInstance.resetPassword(email)
     }
-
-    fun updateToken(newToken: String) {
-        updateToken = loginInstance.successUpdateToken(newToken)
-    }
 }

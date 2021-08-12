@@ -63,6 +63,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
     implementation 'com.google.firebase:firebase-database-ktx:20.0.1'
     implementation 'com.google.firebase:firebase-firestore-ktx:23.0.3'
+    implementation 'com.google.firebase:firebase-analytics-ktx:19.0.0'
+    implementation 'com.google.firebase:firebase-core:19.0.0'
 
     // MultiDex
     implementation 'androidx.multidex:multidex:2.0.1'

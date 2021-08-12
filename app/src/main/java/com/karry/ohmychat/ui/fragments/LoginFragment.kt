@@ -2,6 +2,7 @@ package com.karry.ohmychat.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,13 +21,9 @@ import com.karry.ohmychat.R
 import com.karry.ohmychat.databinding.FragmentLoginBinding
 import com.karry.ohmychat.model.User
 import com.karry.ohmychat.ui.activities.MainActivity
-import com.karry.ohmychat.utils.Constants.KEY_BIO
-import com.karry.ohmychat.utils.Constants.KEY_IMAGE
-import com.karry.ohmychat.utils.Constants.KEY_NAME
-import com.karry.ohmychat.utils.Constants.KEY_STATUS
-import com.karry.ohmychat.utils.Constants.KEY_TIMESTAMP
 import com.karry.ohmychat.utils.PreferenceManager
 import com.karry.ohmychat.utils.dismissKeyboard
+import com.karry.ohmychat.utils.showToast
 import com.karry.ohmychat.viewmodel.DatabaseViewModel
 import com.karry.ohmychat.viewmodel.LoginViewModel
 
@@ -117,6 +114,7 @@ class LoginFragment : Fragment() {
 
     private fun loginUser(email: String, password: String) {
         loginViewModel.loginUser(email, password)
+        var user: User? = null
         loginViewModel.loginUser.observe(viewLifecycleOwner) { task ->
             if (!task.isSuccessful) {
                 loading(false)
@@ -144,29 +142,27 @@ class LoginFragment : Fragment() {
                 }
             } else {
                 val userId = FirebaseAuth.getInstance().currentUser!!.uid
+                Log.d("Login", "Current uid")
 
-                databaseViewModel.checkLogin(userId)
-                databaseViewModel.userSnapshot.observe(viewLifecycleOwner) { documentSnapshot ->
-                    if (documentSnapshot != null) {
-
-                        val name = documentSnapshot.getString(KEY_NAME)!!
-                        val timestamp = documentSnapshot.getLong(KEY_TIMESTAMP)!!
-                        val imageUrl = documentSnapshot.getString(KEY_IMAGE)!!
-                        val bio = documentSnapshot.getString(KEY_BIO)!!
-                        val status = documentSnapshot.getBoolean(KEY_STATUS)!!
-
-                        val user = User(userId, name, email, timestamp, imageUrl, bio, status)
-                        preferenceManager.putUser(user)
+                databaseViewModel.fetchUser(userId)
+                databaseViewModel.user.observe(viewLifecycleOwner) {
+                    if (it != null) {
+                        preferenceManager.putUser(it)
 
                         val intent = Intent(requireActivity(), MainActivity::class.java).apply {
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         }
+                        showToast(requireActivity(), "Login successfully!")
                         startActivity(intent)
                         requireActivity().finish()
+                    } else {
+                        loading(false)
+                        binding.emailLoginInputLayout.requestFocus()
+                        FirebaseAuth.getInstance().signOut()
+                        showToast(requireActivity(), "Can't fetch data from database")
                     }
                 }
-
             }
         }
     }

@@ -1,15 +1,13 @@
 package com.karry.ohmychat.service
 
 import android.util.Log
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.karry.ohmychat.viewmodel.LoginViewModel
 
-class MessagingService : FirebaseMessagingService(), LifecycleOwner {
+class MessagingService : FirebaseMessagingService() {
 
     private val loginViewModel =
         ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(
@@ -23,7 +21,6 @@ class MessagingService : FirebaseMessagingService(), LifecycleOwner {
 
         if (null != firebaseUser) {
             Log.d(TAG, "onNewToken: Token is $newToken")
-            updateToken(newToken)
         }
 
     }
@@ -32,21 +29,6 @@ class MessagingService : FirebaseMessagingService(), LifecycleOwner {
         super.onMessageReceived(remoteMessage)
         Log.d(TAG, "onMessageReceived: Title is \"${remoteMessage.notification!!.title}\"")
         Log.d(TAG, "onMessageReceived: Message is \"${remoteMessage.notification!!.body}\"")
-    }
-
-    private fun updateToken(newToken: String) {
-        loginViewModel.updateToken(newToken)
-        loginViewModel.updateToken.observe(this) {
-            if (it) {
-                Log.d(TAG, "updateToken: Update token successful")
-            } else {
-                Log.e(TAG, "updateToken: Update token fail")
-            }
-        }
-    }
-
-    override fun getLifecycle(): Lifecycle {
-        return this.lifecycle
     }
 
     companion object {

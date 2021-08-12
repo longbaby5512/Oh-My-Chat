@@ -25,7 +25,7 @@ class FirebaseLoginInstance {
         return auth
     }
 
-    fun successUpdateToken(newToken: String): MutableLiveData<Boolean> {
+    fun successTokenUpdate(newToken: String): MutableLiveData<Boolean> {
         val successTokenUpdate = MutableLiveData<Boolean>()
         val firebaseUser = FirebaseAuth.getInstance().currentUser
 

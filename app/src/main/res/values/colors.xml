@@ -12,6 +12,8 @@
     <color name="chats_500">#2196F3</color>
     <color name="chats_700">#1057AE</color>
     <color name="chats_900">#062B74</color>
+    <color name="chats_200_tran_5A">#5AA6E5FD</color>
+
 
     <color name="search_100">#EAD9FB</color>
     <color name="search_200">#D3B4F7</color>

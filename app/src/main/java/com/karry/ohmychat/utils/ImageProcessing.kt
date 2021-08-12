@@ -24,18 +24,17 @@ fun setStatusBarColor(activity: Activity, @ColorInt color: Int) {
     activity.window.statusBarColor = color
 }
 
-fun convert(bitmap: Bitmap, compress: Int = 100): String {
+fun convert(bitmap: Bitmap, compress: Int = 100, width: Int? = null): String {
     val outputStream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, compress, outputStream)
+    var newBitmap = bitmap
+    if (width != null) {
+        val height = bitmap.height * width / bitmap.width
+        newBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false)
+    }
+    newBitmap.compress(Bitmap.CompressFormat.PNG, compress, outputStream)
     return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
 }
 
-
-fun convertToByteArray(bitmap: Bitmap, compress: Int = 100): ByteArray {
-    val outputStream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, compress, outputStream)
-    return outputStream.toByteArray()
-}
 
 fun convert(base64: String): Bitmap {
     val decodedBytes: ByteArray = Base64.decode(

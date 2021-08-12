@@ -47,13 +47,17 @@ class RegisterFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        bitmap = null
-        uri = null
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bitmap = null
+        uri = null
     }
 
     override fun onStop() {
@@ -66,6 +70,10 @@ class RegisterFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
+
+        if (bitmap != null) {
+            binding.profileImageRegister.setImageBitmap(bitmap)
+        }
 
         registerViewModel = ViewModelProvider(
             requireActivity(), ViewModelProvider
@@ -187,7 +195,7 @@ class RegisterFragment : Fragment() {
                     name = name,
                     email = email,
                     timestamp = timestamp,
-                    imageBase64 = convert(getBitmap(binding.profileImageRegister)),
+                    imageBase64 = convert(getBitmap(binding.profileImageRegister), width = 150),
                     bio = "Hey there!",
                     status = false
                 )

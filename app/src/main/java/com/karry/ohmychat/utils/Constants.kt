@@ -7,12 +7,10 @@ object Constants {
     const val KEY_NAME = "name"
     const val KEY_USER_ID = "id"
     const val KEY_EMAIL = "email"
-    const val KEY_PASSWORD = "password"
-    const val KEY_IMAGE = "image"
+    const val KEY_IMAGE = "imageBase64"
     const val KEY_BIO = "bio"
     const val KEY_TIMESTAMP = "timestamp"
-    const val KEY_IS_SIGNED_IN = "isSignedIn"
     const val KEY_STATUS = "status"
     const val KEY_PREFERENCE_NAME = "chatAppPreference"
-
+    const val KEY_FCM_TOKEN = "fcmToken"
 }

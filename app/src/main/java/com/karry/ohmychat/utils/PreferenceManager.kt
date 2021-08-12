@@ -39,6 +39,22 @@ class PreferenceManager(context: Context) {
         return User(id!!, name!!, email!!, timestamp, image!!, bio!!, status)
     }
 
+    fun getString(key: String) = sharePreferences.getString(key, "")
+
+    fun putString(key: String, value: String) {
+        val editor = sharePreferences.edit()
+        editor.putString(key, value)
+        editor.apply()
+    }
+
+    fun getLong(key: String) = sharePreferences.getLong(key, 0)
+
+    fun putLong(key: String, value: Long) {
+        val editor = sharePreferences.edit()
+        editor.putLong(key, value)
+        editor.apply()
+    }
+
     fun getBoolean(key: String) = sharePreferences.getBoolean(key, false)
 
     fun putBoolean(key: String, value: Boolean) {
