@@ -6,16 +6,6 @@
     app:startDestination="@id/viewPaperFragment">
 
     <fragment
-        android:id="@+id/chatsFragment"
-        android:name="com.karry.ohmychat.ui.fragments.ChatsFragment"
-        android:label="Chats"
-        tools:layout="@layout/fragment_chats" />
-    <fragment
-        android:id="@+id/groupsFragment"
-        android:name="com.karry.ohmychat.ui.fragments.GroupsFragment"
-        android:label="Groups"
-        tools:layout="@layout/fragment_groups" />
-    <fragment
         android:id="@+id/photoViewFragment"
         android:name="com.karry.ohmychat.ui.fragments.PhotoViewFragment"
         android:label="Photo View"
@@ -27,22 +17,31 @@
             android:defaultValue="@null" />
     </fragment>
     <fragment
-        android:id="@+id/searchFragment"
-        android:name="com.karry.ohmychat.ui.fragments.SearchFragment"
-        android:label="Search"
-        tools:layout="@layout/fragment_search" />
-    <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.karry.ohmychat.ui.fragments.ProfileFragment"
-        android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
-    <fragment
         android:id="@+id/viewPaperFragment"
         android:name="com.karry.ohmychat.ui.fragments.ViewPaperFragment"
         android:label="fragment_view_paper"
-        tools:layout="@layout/fragment_view_paper" >
+        tools:layout="@layout/fragment_view_paper">
         <action
             android:id="@+id/action_viewPaperFragment_to_photoViewFragment"
             app:destination="@id/photoViewFragment" />
+        <action
+            android:id="@+id/action_viewPaperFragment_to_messageFragment"
+            app:destination="@id/messageFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/messageFragment"
+        android:name="com.karry.ohmychat.ui.fragments.MessageFragment"
+        android:label="fragment_message"
+        tools:layout="@layout/fragment_message">
+        <argument
+            android:name="user"
+            app:argType="com.karry.ohmychat.model.User" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
     </fragment>
 </navigation>

@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.util.PatternsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -19,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.karry.ohmychat.R
 import com.karry.ohmychat.databinding.FragmentLoginBinding
-import com.karry.ohmychat.model.User
 import com.karry.ohmychat.ui.activities.MainActivity
 import com.karry.ohmychat.utils.PreferenceManager
 import com.karry.ohmychat.utils.dismissKeyboard
@@ -36,85 +34,76 @@ class LoginFragment : Fragment() {
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var databaseViewModel: DatabaseViewModel
 
-
-    override fun onResume() {
-        super.onResume()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        loginViewModel = ViewModelProvider(
-            requireActivity(), ViewModelProvider
-                .AndroidViewModelFactory.getInstance(requireActivity().application)
-        ).get(LoginViewModel::class.java)
-
-        databaseViewModel = ViewModelProvider(
-            requireActivity(), ViewModelProvider
-                .AndroidViewModelFactory.getInstance(requireActivity().application)
-        ).get(DatabaseViewModel::class.java)
-
-        preferenceManager = PreferenceManager(requireContext())
-
+        init()
         getUserSession()
-
-        with(binding) {
-            buttonToRegister.setOnClickListener {
-                findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
-            }
-
-            buttonToForgetPassword.setOnClickListener {
-                findNavController().navigate(R.id.action_loginFragment_to_resetPasswordFragment)
-            }
-
-            buttonLogin.setOnClickListener {
-                emailLoginInputLayout.clearFocus()
-                passwordLoginInputLayout.clearFocus()
-                val buttonClick = AlphaAnimation(1f, 0.8f).apply {
-                    duration = 500L
-                }
-                it.startAnimation(buttonClick)
-                dismissKeyboard(requireActivity())
-
-                val email = emailLoginEditText.text.toString()
-                val password = passwordLoginEditText.text.toString()
-
-                if (password.isEmpty() && email.isEmpty()) {
-                    Toast.makeText(requireContext(), "Fields are empty!", Toast.LENGTH_SHORT).show()
-                    emailLoginInputLayout.requestFocus()
-                } else if (email.isEmpty()) {
-                    emailLoginInputLayout.error = "Please enter your Email Id."
-                    emailLoginInputLayout.requestFocus()
-                } else if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {
-                    emailLoginInputLayout.error = "Your text is not email."
-                    emailLoginInputLayout.requestFocus()
-                } else if (password.isEmpty()) {
-                    passwordLoginEditText.error = "Please enter your password."
-                    passwordLoginEditText.requestFocus()
-                } else {
-                    loading(true)
-                    loginUser(email, password)
-                }
-            }
-
-
-        }
+        listener()
 
         return binding.root
     }
 
+    private fun listener() {
+        with(binding) {
+            val animator = AlphaAnimation(1f, 0.7f)
+
+            buttonToRegister.setOnClickListener {
+                it.startAnimation(animator)
+                findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+            }
+
+            buttonToForgetPassword.setOnClickListener {
+                it.startAnimation(animator)
+                findNavController().navigate(R.id.action_loginFragment_to_resetPasswordFragment)
+            }
+
+            buttonLogin.setOnClickListener {
+                val buttonClick = AlphaAnimation(1f, 0.8f)
+                it.startAnimation(buttonClick)
+                onLoginClick()
+            }
+        }
+    }
+
+    private fun onLoginClick() {
+        with(binding) {
+            emailLoginInputLayout.clearFocus()
+            passwordLoginInputLayout.clearFocus()
+
+
+            dismissKeyboard(requireActivity())
+
+            val email = emailLoginEditText.text.toString()
+            val password = passwordLoginEditText.text.toString()
+
+            if (password.isEmpty() && email.isEmpty()) {
+                Toast.makeText(requireContext(), "Fields are empty!", Toast.LENGTH_SHORT).show()
+                emailLoginInputLayout.requestFocus()
+            } else if (email.isEmpty()) {
+                emailLoginInputLayout.error = "Please enter your Email Id."
+                emailLoginInputLayout.requestFocus()
+            } else if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {
+                emailLoginInputLayout.error = "Your text is not email."
+                emailLoginInputLayout.requestFocus()
+            } else if (password.isEmpty()) {
+                passwordLoginEditText.error = "Please enter your password."
+                passwordLoginEditText.requestFocus()
+            } else {
+                loading(true)
+                loginUser(email, password)
+            }
+        }
+    }
+
+    private fun init() {
+        loginViewModel = ViewModelProvider(requireActivity(), ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)).get(LoginViewModel::class.java)
+        databaseViewModel = ViewModelProvider(requireActivity(), ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)).get(DatabaseViewModel::class.java)
+        preferenceManager = PreferenceManager(requireContext())
+    }
+
     private fun loginUser(email: String, password: String) {
         loginViewModel.loginUser(email, password)
-        var user: User? = null
         loginViewModel.loginUser.observe(viewLifecycleOwner) { task ->
             if (!task.isSuccessful) {
                 loading(false)
@@ -185,23 +174,43 @@ class LoginFragment : Fragment() {
         with(binding) {
             if (isLoading) {
                 emailLoginInputLayout.isClickable = false
+                emailLoginInputLayout.isEnabled = false
+
                 passwordLoginInputLayout.isClickable = false
+                passwordLoginInputLayout.isEnabled = false
+
                 buttonToRegister.isClickable = false
+                buttonToRegister.isEnabled = false
+
                 buttonToForgetPassword.isClickable = false
+                buttonToForgetPassword.isEnabled = false
+
                 progressBarLogin.visibility = View.VISIBLE
+
                 buttonLogin.animate().alpha(0.5F).duration = 500L
                 buttonLogin.isCheckable = false
+                buttonLogin.isEnabled = false
 
                 emailLoginInputLayout.error = ""
                 passwordLoginInputLayout.error = ""
             } else {
                 emailLoginInputLayout.isClickable = true
+                emailLoginInputLayout.isEnabled = true
+
                 passwordLoginInputLayout.isClickable = true
+                passwordLoginInputLayout.isEnabled = true
+
                 buttonToRegister.isClickable = true
+                buttonToRegister.isEnabled = true
+
                 buttonToForgetPassword.isClickable = true
+                buttonToForgetPassword.isEnabled = true
+
                 progressBarLogin.visibility = View.GONE
+
                 buttonLogin.animate().alpha(1F).duration = 500L
                 buttonLogin.isCheckable = true
+                buttonLogin.isEnabled = true
 
                 emailLoginEditText.setText("")
                 passwordLoginEditText.setText("")

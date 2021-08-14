@@ -13,5 +13,6 @@ data class User(
     var imageBase64: String,
     var bio: String,
     var status: Boolean,
-    var search: String = name.lowercase(Locale.getDefault())
+    var search: String = name.lowercase(Locale.getDefault()),
+    var fcmToken: String? = null
 ) : Parcelable

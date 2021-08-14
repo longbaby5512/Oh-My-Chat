@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.*
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -15,7 +14,6 @@ import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MenuRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.util.PatternsCompat.EMAIL_ADDRESS
 import androidx.fragment.app.Fragment
@@ -36,17 +34,29 @@ import java.util.*
 class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
-    private var bitmap: Bitmap? = null
-    private var uri: Uri? = null
+    private lateinit var bitmap: Bitmap
     private lateinit var registerViewModel: RegisterViewModel
     private lateinit var currentUser: FirebaseUser
     private lateinit var databaseViewModel: DatabaseViewModel
     private lateinit var preferenceManager: PreferenceManager
     private val timestamp = System.currentTimeMillis()
-
-    override fun onResume() {
-        super.onResume()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+    private val pickImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+            val uri = it.data!!.data!!
+            try {
+                val inputStream = requireActivity().contentResolver.openInputStream(uri)
+                bitmap = BitmapFactory.decodeStream(inputStream)
+                binding.profileImageRegister.setImageBitmap(bitmap)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
+        }
+    }
+    private val takePhoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+            bitmap = it.data!!.extras!!.get("data") as Bitmap
+            binding.profileImageRegister.setImageBitmap(bitmap)
+        }
     }
 
     override fun onDestroyView() {
@@ -54,105 +64,30 @@ class RegisterFragment : Fragment() {
         _binding = null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        bitmap = null
-        uri = null
-    }
-
-    override fun onStop() {
-        super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
-        if (bitmap != null) {
-            binding.profileImageRegister.setImageBitmap(bitmap)
-        }
+        init()
+        listener()
 
-        registerViewModel = ViewModelProvider(
-            requireActivity(), ViewModelProvider
-                .AndroidViewModelFactory.getInstance(requireActivity().application)
-        ).get(RegisterViewModel::class.java)
+        return binding.root
+    }
 
-        databaseViewModel = ViewModelProvider(
-            requireActivity(), ViewModelProvider
-                .AndroidViewModelFactory.getInstance(requireActivity().application)
-        ).get(DatabaseViewModel::class.java)
-
-        preferenceManager = PreferenceManager(requireContext())
-
+    private fun listener() {
         with(binding) {
             val buttonClick = AlphaAnimation(1f, 0.8f)
-
-            setIconColor(
-                requireActivity(),
-                R.drawable.ic_camera,
-                buttonUpImage,
-                R.color.camera_icon_register
-            )
-            setBackgroundColor(
-                buttonUpImage.background!!,
-                getColorResource(requireActivity(), R.color.camera_icon_register_background)
-            )
-
-
             buttonToLogin.setOnClickListener {
+                it.startAnimation(buttonClick)
                 requireActivity().onBackPressed()
             }
 
             profileImageRegister.setOnClickListener {
-                val action =
-                    RegisterFragmentDirections.actionRegisterFragmentToPhotoViewFragment(bitmap)
+                val action = RegisterFragmentDirections.actionRegisterFragmentToPhotoViewFragment(bitmap)
                 findNavController().navigate(action)
             }
 
             buttonRegister.setOnClickListener {
-                usernameRegisterInputLayout.clearFocus()
-                emailRegisterInputLayout.clearFocus()
-                passwordRegisterInputLayout.clearFocus()
-                it.startAnimation(buttonClick)
-
-                val email = emailRegisterEditText.text.toString()
-                val name = usernameRegisterEditText.text.toString()
-                val password = passwordRegisterEditText.text.toString()
-                val passwordConfirm = confirmRegisterEditText.text.toString()
-
-                if (email.isEmpty() && name.isEmpty() && password.isEmpty() && passwordConfirm.isEmpty()) {
-                    showToast(requireContext(), "Fields are empty!")
-                    usernameRegisterInputLayout.requestFocus()
-                } else if (name.isEmpty()) {
-                    usernameRegisterInputLayout.error = "Please enter a username."
-                    usernameRegisterInputLayout.requestFocus()
-                } else if (email.isEmpty()) {
-                    emailRegisterInputLayout.error = "Please enter your email."
-                    emailRegisterInputLayout.requestFocus()
-                } else if (!EMAIL_ADDRESS.matcher(email).matches()) {
-                    emailRegisterInputLayout.error = "Your text is not email."
-                    emailRegisterInputLayout.requestFocus()
-                } else if (password.isEmpty()) {
-                    passwordRegisterInputLayout.error = "Please enter your password"
-                    passwordRegisterInputLayout.requestFocus()
-                } else if (passwordConfirm.isEmpty()) {
-                    confirmRegisterInputLayout.error = "Please enter your password"
-                    confirmRegisterInputLayout.requestFocus()
-                } else if (password != passwordConfirm) {
-                    confirmRegisterInputLayout.error =
-                        "Password confirm and password are not similar"
-                    confirmRegisterInputLayout.requestFocus()
-                } else {
-
-
-                    dismissKeyboard(requireActivity())
-                    loading(true)
-                    register(name, email, password)
-
-                }
+                onRegisterClick()
             }
 
             buttonUpImage.setOnClickListener {
@@ -160,10 +95,62 @@ class RegisterFragment : Fragment() {
                 showPopupMenu(it, R.menu.photo_menu)
             }
         }
-
-        return binding.root
     }
 
+    private fun onRegisterClick() {
+        with(binding) {
+            usernameRegisterInputLayout.clearFocus()
+            emailRegisterInputLayout.clearFocus()
+            passwordRegisterInputLayout.clearFocus()
+
+            val email = emailRegisterEditText.text.toString()
+            val name = usernameRegisterEditText.text.toString()
+            val password = passwordRegisterEditText.text.toString()
+            val passwordConfirm = confirmRegisterEditText.text.toString()
+
+            if (email.isEmpty() && name.isEmpty() && password.isEmpty() && passwordConfirm.isEmpty()) {
+                showToast(requireContext(), "Fields are empty!")
+                usernameRegisterInputLayout.requestFocus()
+            } else if (name.isEmpty()) {
+                usernameRegisterInputLayout.error = "Please enter a username."
+                usernameRegisterInputLayout.requestFocus()
+            } else if (email.isEmpty()) {
+                emailRegisterInputLayout.error = "Please enter your email."
+                emailRegisterInputLayout.requestFocus()
+            } else if (!EMAIL_ADDRESS.matcher(email).matches()) {
+                emailRegisterInputLayout.error = "Your text is not email."
+                emailRegisterInputLayout.requestFocus()
+            } else if (password.isEmpty()) {
+                passwordRegisterInputLayout.error = "Please enter your password"
+                passwordRegisterInputLayout.requestFocus()
+            } else if (passwordConfirm.isEmpty()) {
+                confirmRegisterInputLayout.error = "Please enter your password"
+                confirmRegisterInputLayout.requestFocus()
+            } else if (password != passwordConfirm) {
+                confirmRegisterInputLayout.error = "Password confirm and password are not similar"
+                confirmRegisterInputLayout.requestFocus()
+            } else {
+                dismissKeyboard(requireActivity())
+                loading(true)
+                register(name, email, password)
+            }
+        }
+    }
+
+    private fun init() {
+        if (this@RegisterFragment::bitmap.isInitialized) {
+            binding.profileImageRegister.setImageBitmap(bitmap)
+        }
+
+        registerViewModel = ViewModelProvider(requireActivity(), ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)).get(RegisterViewModel::class.java)
+        databaseViewModel = ViewModelProvider(requireActivity(), ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)).get(DatabaseViewModel::class.java)
+        preferenceManager = PreferenceManager(requireContext())
+
+        with(binding) {
+            setIconColor(requireActivity(), R.drawable.ic_camera, buttonUpImage, R.color.camera_icon_register)
+            setBackgroundColor(buttonUpImage.background!!, getColorResource(requireActivity(), R.color.camera_icon_register_background))
+        }
+    }
 
     private fun register(name: String, email: String, password: String) {
         registerViewModel.registerUser(email, password)
@@ -195,7 +182,7 @@ class RegisterFragment : Fragment() {
                     name = name,
                     email = email,
                     timestamp = timestamp,
-                    imageBase64 = convert(getBitmap(binding.profileImageRegister), width = 150),
+                    imageBase64 = convert(getBitmap(binding.profileImageRegister), 50),
                     bio = "Hey there!",
                     status = false
                 )
@@ -206,8 +193,8 @@ class RegisterFragment : Fragment() {
 
     private fun addUserToDatabase(user: User, email: String, password: String) {
         databaseViewModel.addUserInDatabase(user)
-        databaseViewModel.successAddUserToDatabase.observe(viewLifecycleOwner) {
-            if (it == null) {
+        databaseViewModel.isUpdated.observe(viewLifecycleOwner) {
+            if (!it) {
                 loading(false)
                 binding.usernameRegisterInputLayout.requestFocus()
                 showToast(requireActivity(), "Can't add user to database")
@@ -239,42 +226,32 @@ class RegisterFragment : Fragment() {
         }
     }
 
-    private val pickImage = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-            uri = it.data!!.data!!
-            try {
-                val inputStream = requireActivity().contentResolver.openInputStream(uri!!)
-                bitmap = BitmapFactory.decodeStream(inputStream)
-                binding.profileImageRegister.setImageBitmap(bitmap)
-            } catch (e: FileNotFoundException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private val takePhoto = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-            bitmap = it.data!!.extras!!.get("data") as Bitmap
-            binding.profileImageRegister.setImageBitmap(bitmap)
-        }
-    }
-
     private fun loading(isLoading: Boolean) {
         with(binding) {
             if (isLoading) {
                 progressBarRegister.visibility = View.VISIBLE
+
                 usernameRegisterInputLayout.isClickable = false
+                usernameRegisterInputLayout.isEnabled = false
+
                 emailRegisterInputLayout.isClickable = false
+                emailRegisterInputLayout.isEnabled = false
+
                 passwordRegisterInputLayout.isClickable = false
+                passwordRegisterInputLayout.isClickable = false
+
                 buttonRegister.isClickable = false
-                buttonToLogin.isClickable = false
-                profileImageRegister.isClickable = false
-                buttonUpImage.isClickable = false
+                buttonRegister.isCheckable = false
                 buttonRegister.animate().alpha(0.5F).duration = 500L
+
+                buttonToLogin.isClickable = false
+                buttonToLogin.isEnabled = false
+
+                profileImageRegister.isClickable = false
+                profileImageRegister.isEnabled = false
+
+                buttonUpImage.isClickable = false
+                buttonUpImage.isEnabled = false
 
                 usernameRegisterInputLayout.error = ""
                 emailRegisterInputLayout.error = ""
@@ -282,14 +259,28 @@ class RegisterFragment : Fragment() {
                 confirmRegisterInputLayout.error = ""
             } else {
                 progressBarRegister.visibility = View.GONE
+
                 usernameRegisterInputLayout.isClickable = true
+                usernameRegisterInputLayout.isEnabled = true
+
                 emailRegisterInputLayout.isClickable = true
+                emailRegisterInputLayout.isEnabled = true
+
                 passwordRegisterInputLayout.isClickable = true
+                passwordRegisterInputLayout.isClickable = true
+
                 buttonRegister.isClickable = true
-                buttonToLogin.isClickable = true
+                buttonRegister.isCheckable = true
                 buttonRegister.animate().alpha(1F).duration = 500L
+
+                buttonToLogin.isClickable = true
+                buttonToLogin.isEnabled = true
+
                 profileImageRegister.isClickable = true
+                profileImageRegister.isEnabled = true
+
                 buttonUpImage.isClickable = true
+                buttonUpImage.isEnabled = true
 
                 usernameRegisterEditText.setText("")
                 emailRegisterEditText.setText("")

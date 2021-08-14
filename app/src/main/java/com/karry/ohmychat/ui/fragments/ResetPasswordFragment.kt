@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.util.PatternsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -18,18 +17,21 @@ class ResetPasswordFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var loginViewModel: LoginViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentResetPasswordBinding.inflate(inflater, container, false)
 
-        loginViewModel = ViewModelProvider(
-            requireActivity(), ViewModelProvider
-                .AndroidViewModelFactory.getInstance(requireActivity().application)
-        ).get(LoginViewModel::class.java)
+        init()
+        listener()
 
+        return binding.root
+    }
+
+    private fun listener() {
         with(binding) {
+            buttonBackToLogin.setOnClickListener {
+                activity?.onBackPressed()
+            }
+
             buttonReset.setOnClickListener {
                 val email = emailResetEditText.text.toString()
                 dismissKeyboard(requireActivity())
@@ -51,8 +53,10 @@ class ResetPasswordFragment : Fragment() {
                 }
             }
         }
+    }
 
-        return binding.root
+    private fun init() {
+        loginViewModel = ViewModelProvider(requireActivity(), ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)).get(LoginViewModel::class.java)
     }
 
     private fun resetPassword(email: String) {
@@ -74,11 +78,6 @@ class ResetPasswordFragment : Fragment() {
                 activity?.onBackPressed()
             }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
     }
 
     override fun onDestroyView() {

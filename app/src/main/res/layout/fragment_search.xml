@@ -1,44 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/search_100"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.SearchFragment">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollView"
-        android:fillViewport="true"
-        android:fadeScrollbars="false"
+    <RelativeLayout
+        android:id="@+id/search_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:visibility="gone"
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_user"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/shape_search"
+            app:iconifiedByDefault="false"
+            app:queryBackground="@null"
+            app:queryHint="@string/search"
+            app:searchIcon="@null"
+            app:submitBackground="@null" />
 
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/search_user"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="@drawable/shape_search"
-                app:queryBackground="@null"
-                app:iconifiedByDefault="false"
-                app:queryHint="@string/search"
-                app:searchIcon="@null"
-                app:submitBackground="@null"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/user_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/search_user"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="10dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </RelativeLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/user_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/search_user"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginTop="10dp"
-                tools:ignore="SpeakableTextPresentCheck" />
-        </RelativeLayout>
-    </androidx.core.widget.NestedScrollView>
+    <TextView
+        android:id="@+id/empty_user_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/empty"
+        android:textColor="@color/search_300"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
-</RelativeLayout>
+    <ProgressBar
+        android:id="@+id/progress_bar_load_user"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:fromDegrees="0"
+        android:indeterminateTint="@color/search_500"
+        android:toDegrees="2160"
+        android:visibility="visible" />
+</FrameLayout>

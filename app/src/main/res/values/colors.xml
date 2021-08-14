@@ -9,17 +9,22 @@
 
     <color name="chats_100">#D2F4FE</color>
     <color name="chats_200">#A6E5FD</color>
+    <color name="chats_300">#79D0FB</color>
     <color name="chats_500">#2196F3</color>
     <color name="chats_700">#1057AE</color>
     <color name="chats_900">#062B74</color>
+    <color name="chats_1000">#011143</color>
     <color name="chats_200_tran_5A">#5AA6E5FD</color>
 
 
     <color name="search_100">#EAD9FB</color>
     <color name="search_200">#D3B4F7</color>
+    <color name="search_300">#B389E9</color>
     <color name="search_500">#673AB7</color>
     <color name="search_700">#3A1D83</color>
     <color name="search_900">#1B0B57</color>
+    <color name="search_200_tran_BA">#BAD3B4F7</color>
+    <color name="search_1000">#0A0332</color>
 
     <color name="groups_100">#FDD4D1</color>
     <color name="groups_200">#FCA4A8</color>
@@ -39,4 +44,7 @@
     <color name="camera_icon_register_background">#8ADDD7D7</color>
 
     <color name="status_bar_color">@color/purple_700</color>
+
+    <color name="onine_status">#45CC58</color>
+    <color name="offline_status">#656363</color>
 </resources>

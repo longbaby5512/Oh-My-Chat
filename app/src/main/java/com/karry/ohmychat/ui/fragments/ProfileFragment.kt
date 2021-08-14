@@ -20,43 +20,51 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.karry.ohmychat.R
 import com.karry.ohmychat.databinding.FragmentProfileBinding
-import com.karry.ohmychat.ui.fragments.ViewPaperFragment.Companion.currentUser
 import com.karry.ohmychat.utils.*
+import com.karry.ohmychat.utils.Constants.KEY_BIO
+import com.karry.ohmychat.utils.Constants.KEY_EMAIL
 import com.karry.ohmychat.utils.Constants.KEY_IMAGE
+import com.karry.ohmychat.utils.Constants.KEY_NAME
+import com.karry.ohmychat.utils.Constants.KEY_USER_ID
 import com.karry.ohmychat.viewmodel.DatabaseViewModel
 import java.io.FileNotFoundException
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-    private var bitmap: Bitmap? = null
-    private var uri: Uri? = null
+    private lateinit var bitmap: Bitmap
+    private lateinit var uri: Uri
     private lateinit var profileImageToolbar: ImageView
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var databaseViewModel: DatabaseViewModel
+    private val pickImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+            uri = it.data!!.data!!
+            try {
+                val inputStream = requireActivity().contentResolver.openInputStream(uri)
+                val newBitmap = BitmapFactory.decodeStream(inputStream)
+                setProfileImage(newBitmap)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
+        }
+    }
+    private val takePhoto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+            val newBitmap = it!!.data!!.extras!!.get("data") as Bitmap
+            setProfileImage(newBitmap)
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-
-        if (bitmap != null) {
-            binding.myProfileImage.setImageBitmap(bitmap)
-            profileImageToolbar.setImageBitmap(bitmap)
-        }
-
-
-
         init()
         listener()
-
-
         return binding.root
     }
 
@@ -79,8 +87,7 @@ class ProfileFragment : Fragment() {
                 true
             }
             myProfileImage.setOnClickListener {
-                val action =
-                    ViewPaperFragmentDirections.actionViewPaperFragmentToPhotoViewFragment(bitmap)
+                val action = ViewPaperFragmentDirections.actionViewPaperFragmentToPhotoViewFragment(bitmap)
                 findNavController().navigate(action)
             }
             myButtonCamera.setOnClickListener {
@@ -93,71 +100,30 @@ class ProfileFragment : Fragment() {
     private fun init() {
         profileImageToolbar = requireActivity().findViewById(R.id.profile_image_home)
         with(binding) {
-            myUsername.text = currentUser.name
-            bitmap = convert(currentUser.imageBase64)
-            myProfileImage.setImageBitmap(bitmap)
-            myEmailProfile.text = currentUser.email
-            myBioProfile.text = currentUser.bio
-
-            databaseViewModel = ViewModelProvider(
-                requireActivity(), ViewModelProvider
-                    .AndroidViewModelFactory.getInstance(requireActivity().application)
-            ).get(DatabaseViewModel::class.java)
-
+            databaseViewModel = ViewModelProvider(requireActivity(), ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)).get(DatabaseViewModel::class.java)
             preferenceManager = PreferenceManager(requireContext())
 
+            myUsername.text = preferenceManager.getString(KEY_NAME)
+            bitmap = convert(preferenceManager.getString(KEY_IMAGE)!!)
+            myProfileImage.setImageBitmap(bitmap)
+            myEmailProfile.text = preferenceManager.getString(KEY_EMAIL)
+            myBioProfile.text = preferenceManager.getString(KEY_BIO)
+
+
             setIconColor(
-                requireActivity(),
-                R.drawable.ic_camera,
-                myButtonCamera,
-                R.color.profiles_900
+                requireActivity(), R.drawable.ic_camera, myButtonCamera, R.color.profiles_900
             )
             setIconColor(requireActivity(), R.drawable.ic_edit, buttonEdit, R.color.profiles_900)
-            setIconColor(
-                requireActivity(),
-                R.drawable.ic_setting,
-                buttonSettingProfile,
-                R.color.profiles_900
-            )
-            setBackgroundColor(
-                buttonSettingProfile.background!!,
-                getColorResource(requireActivity(), R.color.profiles_200_tran_5A)
-            )
-            setBackgroundColor(
-                myBioProfile.background!!,
-                getColorResource(requireActivity(), R.color.profiles_200_tran_BA)
-            )
-            setBackgroundColor(
-                myButtonCamera.background!!,
-                getColorResource(requireActivity(), R.color.profiles_200_tran_5A)
-            )
-            setBackgroundColor(
-                myEmailProfile.background!!,
-                getColorResource(requireActivity(), R.color.profiles_200_tran_BA)
-            )
-        }
-    }
+            setIconColor(requireActivity(), R.drawable.ic_setting, buttonSettingProfile, R.color.profiles_900)
+            setBackgroundColor(buttonSettingProfile.background!!, getColorResource(requireActivity(), R.color.profiles_200_tran_5A))
+            setBackgroundColor(myBioProfile.background!!, getColorResource(requireActivity(), R.color.profiles_200_tran_BA))
+            setBackgroundColor(myButtonCamera.background!!, getColorResource(requireActivity(), R.color.profiles_200_tran_5A))
+            setBackgroundColor(myEmailProfile.background!!, getColorResource(requireActivity(), R.color.profiles_200_tran_BA))
 
-    private val pickImage = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-            uri = it.data!!.data!!
-            try {
-                val inputStream = requireActivity().contentResolver.openInputStream(uri!!)
-                val newBitmap = BitmapFactory.decodeStream(inputStream)
-                setProfileImage(newBitmap)
-            } catch (e: FileNotFoundException) {
-                e.printStackTrace()
+            if (this@ProfileFragment::bitmap.isInitialized) {
+                binding.myProfileImage.setImageBitmap(bitmap)
+                profileImageToolbar.setImageBitmap(bitmap)
             }
-        }
-    }
-
-    private val takePhoto = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-            val newBitmap = it!!.data!!.extras!!.get("data") as Bitmap
-            setProfileImage(newBitmap)
         }
     }
 
@@ -167,7 +133,7 @@ class ProfileFragment : Fragment() {
                 binding.myProfileImage.setImageBitmap(bitmap)
                 profileImageToolbar.setImageBitmap(bitmap)
                 preferenceManager.putString(KEY_IMAGE, convert(bitmap, width = 150))
-                databaseViewModel.updateImage(currentUser.id, convert(bitmap, width = 150))
+                databaseViewModel.updateImage(preferenceManager.getString(KEY_USER_ID)!!, convert(bitmap, width = 150))
                 this.bitmap = bitmap
                 showToast(requireContext(), "Upload image done!")
             } else {
@@ -184,9 +150,7 @@ class ProfileFragment : Fragment() {
         popupMenu.setOnMenuItemClickListener {
             return@setOnMenuItemClickListener when (it.itemId) {
                 R.id.choose_gallery -> {
-                    val intent = Intent(
-                        Intent.ACTION_PICK, MediaStore.Images.Media
-                            .EXTERNAL_CONTENT_URI).apply {
+                    val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
                     pickImage.launch(intent)
@@ -207,8 +171,7 @@ class ProfileFragment : Fragment() {
             val popup = PopupMenu::class.java.getDeclaredField("mPopup")
             popup.isAccessible = true
             val menu = popup.get(popupMenu)
-            menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java)
-                .invoke(menu, true)
+            menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu, true)
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {

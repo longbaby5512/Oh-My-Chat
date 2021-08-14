@@ -13,8 +13,6 @@ class LoginViewModel: ViewModel() {
     val firebaseUserLoginStatus get(): LiveData<FirebaseUser?> = loginInstance.firebaseLoginStatus
     val firebaseAuth get(): LiveData<FirebaseAuth> = loginInstance.firebaseAuth
     lateinit var successPasswordReset: LiveData<Task<*>>
-    lateinit var updateToken: LiveData<Boolean>
-
 
 
     fun loginUser(email: String, password: String) {

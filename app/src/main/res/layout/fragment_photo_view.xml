@@ -15,8 +15,8 @@
 
     <ImageView
         android:id="@+id/button_exit"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_gravity="top|end"
         android:layout_margin="10dp"
         android:background="@drawable/camera_icon_background"

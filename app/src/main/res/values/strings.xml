@@ -31,4 +31,13 @@
     <string name="hey_there">Hey there!</string>
     <string name="example_email">example@example.com</string>
     <string name="change_password">Change password</string>
+    <string name="empty">Empty</string>
+    <string name="type_your_message_here">Type your message here…</string>
+    <string name="_13_08_2021_6_00_sa">13/08/2021 6:00 SA</string>
+    <string name="seen">Seen</string>
+    <string name="this_is_a_message">This is a message</string>
+    <string name="reset_password">Reset password</string>
+    <string name="facebook_application_id" translatable="false">306600981259861</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb306600981259861</string>
+    <string name="_16_00_sa">16:00 SA</string>
 </resources>

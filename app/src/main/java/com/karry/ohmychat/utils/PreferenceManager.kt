@@ -6,13 +6,14 @@ import com.karry.ohmychat.utils.Constants.KEY_BIO
 import com.karry.ohmychat.utils.Constants.KEY_EMAIL
 import com.karry.ohmychat.utils.Constants.KEY_IMAGE
 import com.karry.ohmychat.utils.Constants.KEY_NAME
+import com.karry.ohmychat.utils.Constants.KEY_PREFERENCE_NAME
 import com.karry.ohmychat.utils.Constants.KEY_STATUS
 import com.karry.ohmychat.utils.Constants.KEY_TIMESTAMP
 import com.karry.ohmychat.utils.Constants.KEY_USER_ID
 
 class PreferenceManager(context: Context) {
     private val sharePreferences = context.getSharedPreferences(
-        Constants.KEY_PREFERENCE_NAME,
+        KEY_PREFERENCE_NAME,
         Context.MODE_PRIVATE
     )
 

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.karry.ohmychat.R
 import com.karry.ohmychat.databinding.FragmentPhotoViewBinding
+import com.karry.ohmychat.ui.fragments.ViewPaperFragment.Companion.toChats
 import com.karry.ohmychat.utils.getColorResource
 import com.karry.ohmychat.utils.setBackgroundColor
 import com.karry.ohmychat.utils.setIconColor
@@ -24,41 +25,37 @@ class PhotoViewFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-
+        (activity as AppCompatActivity?)!!.supportActionBar?.hide()
     }
 
     override fun onStop() {
         super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        (activity as AppCompatActivity?)!!.supportActionBar?.show()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentPhotoViewBinding.inflate(inflater, container, false)
 
-        if (args.bitmap != null) {
-            binding.photoView.setImageBitmap(args.bitmap!!)
-        }
-        setStatusBarColor(
-            requireActivity(),
-            getColorResource(requireActivity(), R.color.status_bar_color)
-        )
+        init()
+        listener()
 
+        return binding.root
+    }
+
+    private fun init() {
         with(binding) {
-            setIconColor(
-                requireActivity(),
-                R.drawable.ic_exit,
-                buttonExit,
-                R.color.camera_icon_register
-            )
-            setBackgroundColor(
-                buttonExit.background!!,
-                getColorResource(requireActivity(), R.color.camera_icon_register_background)
-            )
+            setIconColor(requireActivity(), R.drawable.ic_exit, buttonExit, R.color.camera_icon_register)
+            if (args.bitmap != null) {
+                photoView.setImageBitmap(args.bitmap!!)
+            }
+            setStatusBarColor(requireActivity(), getColorResource(requireActivity(), R.color.status_bar_color))
+            setBackgroundColor(buttonExit.background!!, getColorResource(requireActivity(), R.color.camera_icon_register_background))
+        }
+        toChats = false
+    }
 
+    private fun listener() {
+        with(binding) {
             buttonExit.setOnClickListener {
                 val buttonClick = AlphaAnimation(1f, 0.8f)
                 it.startAnimation(buttonClick)
@@ -75,8 +72,6 @@ class PhotoViewFragment : Fragment() {
                 }
             }
         }
-
-        return binding.root
     }
 
     override fun onDestroyView() {
